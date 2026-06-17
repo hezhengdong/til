@@ -155,3 +155,65 @@ TSDB（时序数据库）是一种特殊的 OLAP。
 
 感觉 Spring 八股好难记忆呀，比分布式难记忆多了，没有清晰脉络、没有从第一性原理进行思考导致的？毕竟分布式的原始论文和时代背景很清楚，第一性原理思考很容易理解内化。[AI 的回答](https://www.qianwen.com/share/chat/bfc0f4b9abce47aca5e433f1e4cd896f)，Spring 本质是个工程缝合怪，但还是不够呀，比如 Spring 中那么多 Processor 都有什么具体用处？恼
 
+## 2026-06-18
+
+继续学习一些分布式的概念。自己的相关思考本质都能从两篇颠覆性的论文展开，一个是 NewSQL 的开山之作，一个是云原生数据仓库的开山之作。
+
+正确做法应该是直接看论文，不过论文适合花上多天时间慢慢观看，不适合速成建立框架。因此下面的内容是通过跟 AI 对话沉淀的认知。
+
+### Spanner 相关
+
+Spanner 最初是一个半关系型数据库，底层是 KV，与 F1 一起使用作为关系型数据库。是第一个融合可扩展性和传统关系型数据库特效的数据库。
+
+可扩展性在 MIT 6.5840 的课程实验中有所体现，由多个 Paxos 集群组成。这样能够实现线性一致性，但是跨 Paxos 集群之间还要支持事务。原本的解决方案是笨重的 2PC 等协议，Spanner 通过实现 TrueTime 解决了事务问题。
+
+TiDB 是 Spanner 的开源版实现，不过没有从物理层面实现 TrueTime，而是从软件层面实现了一个中心授时系统。
+
+**如何理解 jepson 的那张图？**
+
+- AI 的解释挺不错 [link](https://gemini.google.com/app/bb4dcd38f3a0c8b2)
+- 简单来说，就是事务是数据库范畴的问题，一致性是分布式范畴的问题，只是在分布式数据库中，二者交织在了一起。
+
+**MIT 6.5840 的课程实验是不是线性一致性的？**
+
+- 我觉得是，从线形一致性的定义来看，已经完美实现，就像一个单机一样。
+- 问题在于实验没有实现事务，如果执行两条涉及不同分片数据库的操作，从事务的角度看存在问题。
+
+### Snowflake 相关
+
+这篇文章（[link](https://zhuanlan.zhihu.com/p/1979139469253821854)）相当不错
+
+**什么是 Shared Nothing、Shared Everything？**
+
+仅从概念上理解：Shared Nothing 就像多个小型 PC，每台 PC 的硬盘、内存、CPU 都不是共享的；Shared Everything 就像是一个大型 PC，共享一个大硬盘、大内存、大 CPU。
+
+从存算一体和存算分离的角度理解：
+
+- 从前大家构建数据库时，都是基于多个小型 PC 构建的，每个 PC 的内存硬盘都要充分利用。
+- 后来有了 AWS EC2 和 AWS S3 这种基础设施，虽然 EC2 和 S3 的本质都是多个小 PC，但是 AWS 基于这些 PC 实现了上层抽象，EC2 就像是无数个计算单元，S3 就像是一个无限硬盘。
+- 直接基于 AWS 实现的 EC2 和 S3 抽象构建数据库，而非基于底层的 PC。数据库的基础设施从 Shared Nothing 变为 Shared Everything。
+
+**什么是云原生？**
+
+按需付费，弹性伸缩。
+
+**怎样理解这段话？**
+
+> 在当时，数据仓库领域主要由两类解决方案主导：一类是传统的 [Shared-Nothing](https://zhida.zhihu.com/search?content_id=267102494&content_type=Article&match_order=1&q=Shared-Nothing&zhida_source=entity) 架构数据库（如 Teradata, Netezza, [Amazon Redshift](https://zhida.zhihu.com/search?content_id=267102494&content_type=Article&match_order=1&q=Amazon+Redshift&zhida_source=entity)），另一类是基于 Hadoop 的大数据平台（如 Hive, Spark SQL）。
+
+之前的数据库要么性能好但是计算存储耦合，要么扩展性好但是性能差。
+
+> Snowflake 的出现打破了这种二元对立，它并未沿用现有的开源组件（如 Hadoop 或 PostgreSQL），而是从零开始构建了一套专为云环境（SaaS）设计的架构。
+
+Snowflake 具体怎么打破的？不知道。
+
+### 工业级缓存
+
+主要是想看看 Facebook 那篇论文，大公司是如何实现多级缓存架构的？是如何解决缓存一致性问题的？
+
+### 分布式计算与 OLAP 重合之处
+
+自己此前知道 OLAP 数据库是用于数据报表等场景的。今天问了问 Hive 是干什么的，没想到 Hive 是给 MapReduce 添加了一层 SQL 抽象，也是用于报表的。
+
+也就是说，计算量低的直接用 OLAP，计算量高的就需要额外的分布式计算组件进行处理。
+
