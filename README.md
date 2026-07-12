@@ -361,3 +361,38 @@ Kafka 还有很多关键设计，如 ISR、acks 等。
 - 有哪些流行的云原生 OLTP 与 OLAP 数据库？根据 AI 的回复，OLAP 存算分离占主导，但是 OLTP 分为两派，一派是 Shared Nothing 的 NewSQL，另一派是 Shared Everything。AI 说存算分离的 OLTP 本质还是单机写入。
 
 另外发现一个不错的综述论文。[link](https://db.cs.cmu.edu/papers/2024/whatgoesaround-sigmodrec2024.pdf)
+
+## 2026-07-12
+
+### 如何理解微服务与云原生？
+
+> 康威定律：设计系统的架构受制于产生这些设计的组织的沟通结构。
+
+微服务主要包含以下功能：
+
+|          | Kubernetes              | Spring Cloud          |
+| -------- | ----------------------- | --------------------- |
+| 弹性伸缩 | Autoscaling             | N/A                   |
+| 服务发现 | KubeDNS / CoreDNS       | Spring Cloud Eureka   |
+| 配置中心 | ConfigMap / Secret      | Spring Cloud Config   |
+| 服务网关 | Ingress Controller      | Spring Cloud Zuul     |
+| 负载均衡 | Load Balancer           | Spring Cloud Ribbon   |
+| 服务安全 | RBAC API                | Spring Cloud Security |
+| 跟踪监控 | Metrics API / Dashboard | Spring Cloud Turbine  |
+| 降级熔断 | N/A                     | Spring Cloud Hystrix  |
+
+- 水平扩容是很早的想法，部署多个无状态的应用程序 + Nginx 负载均衡。
+- 微服务在技术层面优化代码架构，组织层面也优化了组织架构。技术层面，按照业务拆分模块，如 Spring Cloud 中一系列技术组件解决拆分微服务时的共性问题。（[微服务定义性文章](https://martinfowler.com/articles/microservices.html)）
+- Docker 解决标准化环境的问题。
+- K8s 解决容器编排的问题。
+- 云原生，自己的理解是弹性扩缩容按需付费。（[CNCF 对云原生的定义](https://github.com/cncf/toc/blob/main/DEFINITION.md#%E4%B8%AD%E6%96%87%E7%89%88%E6%9C%AC)）
+
+从发展视角理解这些概念：
+
+- 弹性伸缩即为水平扩容，一直存在，只是 K8s 将自动化弹性伸缩的能力内置其中。
+- 自己曾以为先有云原生再有微服务，事实是微服务更先诞生与发展。
+- 微服务流行时，对于标准化环境问题，虽然 Docker 已诞生，但 Java Jar 包本就一次编写到处运行；对于拆分模块时遇到的问题，K8s 在当时尚未胜出角逐，Java 生态发展出了 Spring Cloud。
+- 后来 K8s 成为容器编排的事实标准，云原生概念诞生并流行，成为未来的发展方向。
+- Java 生态也开始拥抱云原生，GraalVM 虚拟机把 Java 编译为机器码，以容器为单位而非 Jar 包。
+- Spring Cloud 与 K8s 也并非互相取代，而是分层发挥作用。Spring Cloud 专注应用层，将平台级工程交给 K8s 生态，Spring Cloud Kubernetes 连接过去的 Spring Cloud 开发习惯与 K8s 功能。
+- 根据 CNCF 对云原生的定义，容器和微服务是云原生的两个重要部分，技术发展于此交汇。
