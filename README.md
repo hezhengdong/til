@@ -523,3 +523,27 @@ flowchart LR
     E[考公] --> 考公失败 --> L[万劫不复]
     E[考公] --> 考公成功 --> J[人生圆满]
 ```
+
+## 2026-08-28
+
+### 测试的重要性
+
+最开始就刷到过 Bun 由 AI 通过 Rust 重构，创始人还合并了，核心是通过了完备的测试。
+
+https://github.com/ruanyf/weekly/blob/master/docs/issue-388.md
+
+阮一峰的文章，测试是新的护城河，比如 SQLite。
+
+https://aws.amazon.com/cn/blogs/china/a-brief-discussion-on-the-development-and-future-of-ai-programming/
+
+AWS 的一个博客也提到了测试，反正产品是否可用是由测试决定的，又不是看开发的代码有多优雅。
+
+https://xhslink.cn/o/1duivEqk9ZI
+
+世界级编程大佬不看代码的帖子，也有测试相关内容。
+
+https://www.ruanyifeng.com/blog/2026/08/weekly-issue-409.html
+
+阮一峰认为有道理的未来的程序员，也提到了测试，而且一个之前不知道的新观点：软件工程工业化。
+
+如此多的观点佐证，足以证明 AI 时代测试的重要性。
